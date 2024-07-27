@@ -24,7 +24,7 @@ jobs:
         pip install gspread pandas google-auth google-auth-oauthlib google-auth-httplib2
 
     - name: Download CSV
-      run: wget -O bulk.csv https://nsearchives.nseindia.com/content/equities/bulk.csv
+      run: curl -o bulk.csv --max-time 30 https://nsearchives.nseindia.com/content/equities/bulk.csv
 
     - name: Upload to Google Sheets
       env:
