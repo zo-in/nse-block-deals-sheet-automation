@@ -1,0 +1,56 @@
+name: Download and Upload CSV to Google Sheets
+
+on:
+  schedule:
+    - cron: '0 16 * * *'  # This cron expression runs the action every day at 10pm IST (4:30pm UTC)
+
+jobs:
+  download-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install gspread pandas google-auth google-auth-oauthlib google-auth-httplib2
+
+    - name: Download CSV
+      run: wget -O bulk.csv https://nsearchives.nseindia.com/content/equities/bulk.csv
+
+    - name: Upload to Google Sheets
+      env:
+        GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+        GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+      run: |
+        import os
+        import json
+        import pandas as pd
+        import gspread
+        from google.oauth2.service_account import Credentials
+        from datetime import datetime
+
+        # Load credentials
+        credentials_info = json.loads(os.getenv('GOOGLE_SHEETS_CREDENTIALS'))
+        credentials = Credentials.from_service_account_info(credentials_info)
+
+        # Authorize and open the Google Sheet
+        gc = gspread.authorize(credentials)
+        sh = gc.open_by_key(os.getenv('GOOGLE_SHEET_ID'))
+
+        # Read the CSV file
+        df = pd.read_csv('bulk.csv')
+
+        # Create a new sheet with today's date as the name
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        worksheet = sh.add_worksheet(title=today_date, rows=df.shape[0] + 1, cols=df.shape[1])
+
+        # Upload new data
+        worksheet.update([df.columns.values.tolist()] + df.values.tolist())
