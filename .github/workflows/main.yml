@@ -3,6 +3,7 @@ name: Download and Upload CSV to Google Sheets
 on:
   schedule:
     - cron: '0 16 * * *'  # This cron expression runs the action every day at 10pm IST (4:30pm UTC)
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
   download-and-upload:
