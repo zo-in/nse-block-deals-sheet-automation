@@ -56,6 +56,30 @@ with open(filename, 'r') as file:
             symbol = row[1]
             symbol_data[symbol].append(row[1:])  # Remove the first column
 
+# Append new data to the master sheet
+master_sheet_name = "MasterSheet"
+try:
+    master_sheet = spreadsheet.worksheet(master_sheet_name)
+except gspread.exceptions.WorksheetNotFound:
+    master_sheet = spreadsheet.add_worksheet(title=master_sheet_name, rows="1000", cols="20")
+
+# Prepare new data with date header and space
+master_header = [f"Date: {current_date}"]
+empty_row = [''] * len(header)
+
+# Insert header and space at the top of the master sheet
+master_sheet.insert_row(empty_row, index=1)
+master_sheet.insert_row(master_header, index=1)
+master_sheet.insert_row(empty_row, index=1)
+
+# Insert new data below the header and space in master sheet
+for row_index, row in enumerate(sum(symbol_data.values(), [])):
+    master_sheet.insert_row(row, row_index + 4)  # Adjust index to account for header and space
+
+# Insert two rows of space after the new data in master sheet
+master_sheet.insert_row(empty_row, index=len(sum(symbol_data.values(), [])) + 5)
+master_sheet.insert_row(empty_row, index=len(sum(symbol_data.values(), [])) + 6)
+
 # Function to append data to a symbol sheet with date header and space
 def append_to_symbol_sheet(symbol, data):
     try:
