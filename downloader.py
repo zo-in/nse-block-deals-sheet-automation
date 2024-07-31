@@ -1,5 +1,9 @@
+import os
 import requests
 from datetime import datetime
+import csv
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # Get current date
 current_date = datetime.now().strftime("%Y-%m-%d")
@@ -24,3 +28,23 @@ if response.status_code == 200:
     print(f"Download successful! Saved as {filename}")
 else:
     print(f"Failed to download the report. Status code: {response.status_code}")
+
+# Google Sheets integration
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+client = gspread.authorize(creds)
+
+# Get the Google Sheet ID from environment variables
+spreadsheet_id = os.getenv('GOOGLE_SHEET_ID')
+
+# Open the Google Sheet using the Spreadsheet ID
+spreadsheet = client.open_by_key(spreadsheet_id)
+
+# Create a new sheet with the current date
+worksheet = spreadsheet.add_worksheet(title=current_date, rows="1000", cols="20")
+
+# Read the CSV file and update the Google Sheet
+with open(filename, 'r') as file:
+    reader = csv.reader(file)
+    for row_index, row in enumerate(reader):
+        worksheet.insert_row(row, row_index + 1)
