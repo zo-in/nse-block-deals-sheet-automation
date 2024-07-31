@@ -32,8 +32,6 @@ else:
 
 # Google Sheets integration
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-
-# Load credentials from environment variable
 credentials_dict = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
 creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
 client = gspread.authorize(creds)
@@ -50,5 +48,17 @@ worksheet = spreadsheet.add_worksheet(title=current_date, rows="1000", cols="20"
 # Read the CSV file and update the Google Sheet
 with open(filename, 'r') as file:
     reader = csv.reader(file)
-    for row_index, row in enumerate(reader):
+    data = list(reader)
+    for row_index, row in enumerate(data):
         worksheet.insert_row(row, row_index + 1)
+
+# Append new data to the master sheet
+master_sheet_name = "MasterSheet"
+try:
+    master_sheet = spreadsheet.worksheet(master_sheet_name)
+except gspread.exceptions.WorksheetNotFound:
+    master_sheet = spreadsheet.add_worksheet(title=master_sheet_name, rows="1000", cols="20")
+
+# Insert new data at the top of the master sheet
+for row_index, row in enumerate(data):
+    master_sheet.insert_row(row, row_index + 1)
