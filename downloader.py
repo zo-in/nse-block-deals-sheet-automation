@@ -59,6 +59,15 @@ try:
 except gspread.exceptions.WorksheetNotFound:
     master_sheet = spreadsheet.add_worksheet(title=master_sheet_name, rows="1000", cols="20")
 
-# Insert new data at the top of the master sheet
+# Prepare new data with date header and space
+header = [f"Date: {current_date}"]
+empty_row = [''] * len(data[0])
+
+# Insert header and space at the top of the master sheet
+master_sheet.insert_row(empty_row, index=1)
+master_sheet.insert_row(header, index=1)
+master_sheet.insert_row(empty_row, index=1)
+
+# Insert new data below the header and space
 for row_index, row in enumerate(data):
-    master_sheet.insert_row(row, row_index + 1)
+    master_sheet.insert_row(row, row_index + 4)  # Adjust index to account for header and space
