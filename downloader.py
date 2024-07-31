@@ -48,7 +48,7 @@ worksheet = spreadsheet.add_worksheet(title=current_date, rows="1000", cols="20"
 # Read the CSV file and update the Google Sheet
 with open(filename, 'r') as file:
     reader = csv.reader(file)
-    data = list(reader)
+    data = [row[1:] for row in reader]  # Remove the first column from each row
     for row_index, row in enumerate(data):
         worksheet.insert_row(row, row_index + 1)
 
