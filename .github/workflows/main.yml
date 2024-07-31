@@ -1,49 +1,79 @@
-name: Download and Upload CSV to Google Sheets
+name: Schedule Python Script
 
 on:
   schedule:
-    - cron: '0 16 * * *'  # This cron expression runs the action every day at 10pm IST (4:30pm UTC)
-  workflow_dispatch:  # Allows manual triggering of the workflow
+    - cron: '0 16 * * *'
+  workflow_dispatch:  
 
 jobs:
-  download-and-upload:
+  run-script:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run script
+        run: python nse-block-deals.py
+      - name: Upload block deals report
+        uses: actions/upload-artifact@v2
+        with:
+          name: block-deals
+          path: block_deals_*.csv
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install gspread pandas google-auth google-auth-oauthlib google-auth-httplib2
 
-    - name: Download CSV
-      run: |
-        for i in {1..5}; do 
-          curl -o bulk.csv --max-time 30 --retry 5 --retry-delay 10 --http1.1 https://nsearchives.nseindia.com/content/equities/bulk.csv && break || sleep 10; 
-        done
 
-    - name: Upload to Google Sheets
-      env:
-        GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-        GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
-      run: |
-        import os
-        import json
-        import pandas as pd
-        import gspread
-        from google.oauth2.service_account import Credentials
-        from datetime import datetime
+# name: Download and Upload CSV to Google Sheets
 
-        # Load credentials
-        credentials_info = json.loads(os.getenv('GOOGLE_SHEETS_CREDENTIALS'))
-        credentials = Credentials.from_service_account_info(credentials_info)
+# on:
+#   schedule:
+#     - cron: '0 16 * * *'  # This cron expression runs the action every day at 10pm IST (4:30pm UTC)
+#   workflow_dispatch:  # Allows manual triggering of the workflow
 
-        # Authorize and open the Google Sheet
-        gc =
+# jobs:
+#   download-and-upload:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
+
+#     - name: Set up Python
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: '3.x'
+
+#     - name: Install dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         pip install gspread pandas google-auth google-auth-oauthlib google-auth-httplib2
+
+#     - name: Download CSV
+#       run: |
+#         for i in {1..5}; do 
+#           curl -o bulk.csv --max-time 30 --retry 5 --retry-delay 10 --http1.1 https://nsearchives.nseindia.com/content/equities/bulk.csv && break || sleep 10; 
+#         done
+
+#     - name: Upload to Google Sheets
+#       env:
+#         GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+#         GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+#       run: |
+#         import os
+#         import json
+#         import pandas as pd
+#         import gspread
+#         from google.oauth2.service_account import Credentials
+#         from datetime import datetime
+
+#         # Load credentials
+#         credentials_info = json.loads(os.getenv('GOOGLE_SHEETS_CREDENTIALS'))
+#         credentials = Credentials.from_service_account_info(credentials_info)
+
+#         # Authorize and open the Google Sheet
+#         gc =
