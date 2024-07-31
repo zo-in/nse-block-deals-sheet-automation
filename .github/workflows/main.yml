@@ -2,7 +2,8 @@ name: Schedule Python Script
 
 on:
   schedule:
-    - cron: '0 16 * * *'
+    # Runs at 16:00 UTC every Monday to Friday
+    - cron: '0 16 * * 1-5'
   workflow_dispatch:
 
 jobs:
