@@ -86,7 +86,6 @@ def append_to_symbol_sheet(symbol, data):
         sheet = spreadsheet.worksheet(symbol)
     except gspread.exceptions.WorksheetNotFound:
         sheet = spreadsheet.add_worksheet(title=symbol, rows="1000", cols="20")
-        sheet.insert_row(header, index=1)
 
     # Prepare new data with date header and space
     date_header = [f"Date: {current_date}"]
@@ -95,7 +94,8 @@ def append_to_symbol_sheet(symbol, data):
     # Insert header and space at the top of the symbol sheet
     sheet.insert_row(empty_row, index=1)
     sheet.insert_row(date_header, index=1)
-    sheet.insert_row(empty_row, index=1)
+    sheet.insert_row(header, index=2)
+    sheet.insert_row(empty_row, index=3)
 
     # Insert new data below the header and space
     for row_index, row in enumerate(data):
