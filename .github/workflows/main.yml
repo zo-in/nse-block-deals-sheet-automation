@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: pip install requests
       - name: Run script
-        run: python nse-block-deals.py
+        run: python downloader.py
       - name: Upload block deals report
         uses: actions/upload-artifact@v2
         with:
