@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 from datetime import datetime
 import csv
@@ -31,7 +32,10 @@ else:
 
 # Google Sheets integration
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
+
+# Load credentials from environment variable
+credentials_dict = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS'))
+creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
 client = gspread.authorize(creds)
 
 # Get the Google Sheet ID from environment variables
