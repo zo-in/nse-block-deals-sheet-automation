@@ -71,3 +71,7 @@ master_sheet.insert_row(empty_row, index=1)
 # Insert new data below the header and space
 for row_index, row in enumerate(data):
     master_sheet.insert_row(row, row_index + 4)  # Adjust index to account for header and space
+
+# Insert two rows of space after the new data
+master_sheet.insert_row(empty_row, index=len(data) + 5)
+master_sheet.insert_row(empty_row, index=len(data) + 6)
