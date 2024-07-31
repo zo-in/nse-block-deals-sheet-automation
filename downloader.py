@@ -70,7 +70,8 @@ empty_row = [''] * len(header)
 # Insert header and space at the top of the master sheet
 master_sheet.insert_row(empty_row, index=1)
 master_sheet.insert_row(master_header, index=1)
-master_sheet.insert_row(empty_row, index=1)
+master_sheet.insert_row(empty_row, index=2)
+master_sheet.insert_row(header, index=3)
 
 # Insert new data below the header and space in master sheet
 for row_index, row in enumerate(sum(symbol_data.values(), [])):
@@ -94,8 +95,8 @@ def append_to_symbol_sheet(symbol, data):
     # Insert header and space at the top of the symbol sheet
     sheet.insert_row(empty_row, index=1)
     sheet.insert_row(date_header, index=1)
-    sheet.insert_row(header, index=2)
-    sheet.insert_row(empty_row, index=3)
+    sheet.insert_row(empty_row, index=2)
+    sheet.insert_row(header, index=3)
 
     # Insert new data below the header and space
     for row_index, row in enumerate(data):
